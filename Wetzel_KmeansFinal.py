@@ -1,35 +1,44 @@
 import marimo
 
-__generated_with = "0.3.5"
+__generated_with = "0.3.6-dev6"
 app = marimo.App()
 
 
 @app.cell
 def __():
+    import micropip
+    return micropip,
+
+
+@app.cell
+async def __(micropip):
     import marimo as mo
     import numpy as np
     from sklearn.cluster import KMeans
     from sklearn.metrics import silhouette_score
     from sklearn.datasets import make_blobs
+    await micropip.install("altair")
     import altair as alt
     import pandas as pd
     import timeit
     import urllib.request
+    import requests
     import PIL.Image
     from pathlib import Path
     from matplotlib import pyplot as plt
-    import micropip
+    from io import BytesIO
     return (
+        BytesIO,
         KMeans,
         PIL,
         Path,
         alt,
         make_blobs,
-        micropip,
         mo,
         np,
         pd,
         plt,
+        requests,
         silhouette_score,
         timeit,
         urllib,
@@ -396,25 +405,13 @@ def __(mo):
 
 @app.cell
 def __(mo):
-    # Render an image from a URL
-    _src = "images/bigO(k).png"
-    mo.image(
-        src=_src,
-        alt="O(k)",
-        rounded=True,
-    )
+    mo.image("https://raw.githubusercontent.com/czhurdlespeed/K-MeansClustering/main/images/bigO(k).png")
     return
 
 
 @app.cell
 def __(mo):
-    mo.image(
-        src="images/bigO(n).png",
-        alt="O(n)",
-        width=600,
-        height=300,
-        rounded=True,
-    )
+    mo.image("https://raw.githubusercontent.com/czhurdlespeed/K-MeansClustering/main/images/bigO(n).png")
     return
 
 
@@ -429,20 +426,21 @@ def __(mo):
 
 
 @app.cell
-def __(PIL, np):
-    image = np.asarray(PIL.Image.open("images/ladybug.png"))
+def __(requests):
+    ladybug_data=requests.get(   "https://raw.githubusercontent.com/czhurdlespeed/K-MeansClustering/main/images/ladybug.png")
+    return ladybug_data,
+
+
+@app.cell
+def __(BytesIO, PIL, ladybug_data, np):
+    image = np.asarray(PIL.Image.open(BytesIO(ladybug_data.content)))
     X_lady = image.reshape(-1,3)
     return X_lady, image
 
 
 @app.cell
 def __(mo):
-    mo.image(
-        src="images/image_segmentation_plot.png",
-        alt="lady bug color segmentation",
-        width=1000,
-        height=1000,
-        rounded=True,
+    mo.image("https://raw.githubusercontent.com/czhurdlespeed/K-MeansClustering/main/images/image_segmentation_plot.png"
     )
     return
 
@@ -463,7 +461,7 @@ def __(KMeans, X_lady, color_form, image, mo, plt):
 
     plt.figure(figsize=(10, 10))
     plt.imshow(segmented_imgs[0] / 255)
-    plt.title(f"Your choice: {color_form.value} colors")
+    plt.title(f"Your choice: {color_form.value} color clusters")
     plt.axis('off')
     plt.savefig("yourchoice.png")
     mo.image(
